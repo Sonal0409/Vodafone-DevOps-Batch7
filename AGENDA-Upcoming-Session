@@ -1,0 +1,65 @@
+Day1: 
+
+Agenda of the class:
+=======================================
+SDLC process and itsphases
+Discuss on DevOps pricipals and tools
+DevOps CICD pipeline, Case study
+Version Control with GIT
+Creation of Local repository
+Git workflows- Local repository
+Branches and merging in GIT
+
+
+Day2:
+
+Agenda of the class:
+=======================================
+Introdcution to GitHub
+push, pull, clone and fork in Github
+pull requests in Github
+Introdcution to Continous Integration with Jenkins
+Jenkins features
+Creation of Job in jenkins
+Jenkins integration with Github
+Jenkins integration with Maven
+
+Day3:
+Agenda of the class:
+====================================
+Introduction to Configuration management with Ansible
+Ansible Adhoc commands
+Ansible playbooks
+Roles in Ansible
+Introduction to Terraform
+terraform provider and resources.
+Create AWS infrastructure using terraform
+
+Day 4:
+=============================================
+What is containerization, Introdcution to Docker tool.
+Docker architecture, Docker Images and pull docker image
+Docker run command and its options
+Access a container via your browser. Port mapping
+Docker file creation, Push dockerfile to Docker Hub
+Docker networking -> Create a custom Bridge network
+Docker compose tool and write docker compose file using YAML
+
+Day 5:
+================================================
+Introduction to Container orchestration and its features
+Introdcution to Kubernetes Container orchestration tool
+Kubernetes Architecture and set up
+Creation of pod  using po-defination file using YAML
+Creation of multi-containaer POD in kubernetes
+Service object in Kubernetes
+Deployment object in Kubernetes
+Introduction to Continous Monitoring
+Introdcution to Nagios monitoring tool
+Introduction to ELK tool
+Install ELK tool using docker-compose tool
+Create a dockerpipleine to deploy and application and monitor using ELK tool.
+
+================================================
+
+Course Complete
