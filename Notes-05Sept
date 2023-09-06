@@ -229,7 +229,7 @@ Setup Terraform:
 
 Execute below command to install terraform:
 
-$ wget https://releases.hashicorp.com/terraform/1.4.6/terraform_1.4.6_linux_amd64.zip
+$ wget https://releases.hashicorp.com/terraform/1.5.6/terraform_1.5.6_linux_amd64.zip
 
 Instal unzip package if it is not available on your lab
 
@@ -237,7 +237,7 @@ $ sudo apt-get install -y unzip
 
 Unzip the terraform_1.4.6_linux_amd64.zip file
 
-$ unzip terraform_1.4.6_linux_amd64.zip
+$ unzip terraform_1.5.6_linux_amd64.zip
 
 $ ls
 
