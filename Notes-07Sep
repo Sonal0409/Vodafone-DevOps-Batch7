@@ -1,0 +1,628 @@
+===========================================================
+Terraform:
+========================================================
+
+Setup Terraform:
+
+Execute below command to install terraform:
+
+$ wget https://releases.hashicorp.com/terraform/1.4.6/terraform_1.4.6_linux_amd64.zip
+
+Instal unzip package if it is not available on your lab
+
+$ sudo apt-get install -y unzip
+
+Unzip the terraform_1.4.6_linux_amd64.zip file
+
+$ unzip terraform_1.4.6_linux_amd64.zip
+
+$ ls
+
+Move terraform to bin directory
+
+$ sudo mv terraform /usr/local/bin/
+
+Verify:
+$ terraform --version
+
+
+
+=========================================================
+
+User creation in AWS and create accesskey and secret key for it.
+
+We will use this accesskey and secret key in the terraform configuration file.
+
+
+You will be connected to AWS management:
+
+In the search box, give IAM and select it.
+You will be on IAM dashboard
+
+On the left side→ click on Users→ Click on ADD user button →unser user details give User name as Terraform → click on next →select 3rd option Attach policies directly →scroll down and from list click on AdministratorAccess →Scroll down → click next → scroll down and click on Create User.
+
+Click on the user name Terraform →Click on security credentials tab→ scroll down to access key→ click on create access key→Click on Command Line Interface (CLI) → Scroll down→Select the box of→ I understand the above recommendation and want to proceed to create an access key. → click on next → click on create access key
+
+Copy the access key : AKIAUJU24ZR34LFZE2ZH
+Coppy and secret key: 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
+
+=========================================================
+
+
+
+Demo 1:
+===============================
+             Connect and authenticate terraform with the AWS provider.
+===============================
+Terraform code is always written in block format
+The first block that you will see in main terraform file is provider block
+
+This block consist of following information:
+
+> name of the provider
+> region where we want to create infrastructure
+> access key and secret key to connect AWS securely
+
+For this create a directory on the lab:
+
+# mkdir myterraformfiles
+# cd myterraformfiles
+# vim awsinstance.tf
+
+provider "aws" {
+
+  region     = "us-east-1"
+
+  access_key = "AKIAUJU24ZR3XTD4A6PC"
+
+  secret_key = "pu9vAfIuO//K5vgX5Ty5z+IqZjvCKrH/fZKZ+1eS"
+
+}
+
+
+Note: replace access key and secret key with your values.
+
+Save the file and execute below command:
+
+# terraform init
+
+Registry link : https://registry.terraform.io/providers/hashicorp/aws/latest/docs
+
+
+Demo2:
+==========================================================
+Create an ec2 instance in AWS using terraform:
+The full code of terraform with provider and resource:
+================================================
+
+provider "aws" {
+
+  region     = "us-east-1"
+
+  access_key = "AKIAUJU24ZR3XTD4A6PC"
+
+  secret_key = "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"
+
+}
+
+resource "aws_instance" "myec2" {
+
+  ami           = "ami-03c7d01cf4dedc891"
+
+  instance_type = "t2.micro"
+
+  tags = {
+
+    Name = "terrafrom-instance"
+
+  }
+
+}
+
+Execute below commands
+
+# terraform validate
+
+# terraform plan
+
+# terraform apply
+
+# terraform destroy
+
+==================================
+
+Docker:
+********************************************
+Lab already has docker installed
+
+$ sudo su -
+$ docker --version
+
+Start the docker engine
+
+$ systemctl start docker
+
+$ systemctl status docker
+
+Docker Images:
+*************************
+
+Demo1: Pull Image from docker hub to your local docker host
+
+docker pull imagename
+
+$ docker pull ubuntu
+
+Docker will pull the image with tag as latest from docker hub library
+
+OR
+
+docker pull imagename:tagname
+
+$ docker pull ubuntu:20.04
+
+Will pull ubuntu image of tag 20.04
+
+2. Check the list of  images pulled from docker host
+
+$ docker images
+
+OR
+
+$ docker image ls
+
+3. Search for images:
+**************
+$ docker search hello-world
+
+4. Delete the images from local docker host
+*******************
+$ docker rmi ubuntu
+
+$ docker rmi ubuntu:20.04
+
+5. Run an Image to create a container
+****************
+
+Docker run Imagename
+
+
+$ docker run ubuntu
+
+Run command: will first check locally if image ubuntu is available or not
+
+If image is not available locally
+
+RUn command will automatically
+
+> pull image from docker hub
+> run the image to launch a container
+> user will be inside the container process
+> user will not be able to see the host machine cursor
+
+
+6. See the list of container created
+
+$ docker ps -a
+
+
+7.  Launch a container from an Image and container should be up & running
+
+When we execute the run command we have to mention in which mode we want to launch the container
+
+Foreground mode
+
+$ docker run -it imagename
+
+-i : interactive
+-t: terminal
+
+$ docker run -it ubuntu
+
+Container will be launched
+Will be up & running
+User will be attached to the container
+That is , user will be on the container terminal
+
+Whenever you are attached to the terminal of the container, using the following options you will come out of the container:
+
+Ctl pq
+
+User will come out of the container and container will be still up and running
+
+exit
+
+User will come out of the container and container will be exited
+
+Attach to the terminal of the container again:
+
+$ docker attach containerid/containername
+
+Execute exit command to comout of container
+
+User will come out of the container and container will be exited
+
+To start a exited container:
+
+$ docker start containerid/name
+
+To stop a running container
+
+$ docker stop containerid/name
+
+Detached mode (-d)
+====================================================
+
+$ docker run -d nginx
+$ docker ps -a
+$ docker container ls – list containers in running status
+
+Container will be launched
+Will be up & running
+User will be detached to the container ie: container is running in the background, user can continue working on the host machine
+
+Delete a Container from the host machine
+
+$ docker rm -f containername/conatinerid
+$ docker rm -f n1
+$ docker ps -a : no container will be there
+
+
+Describe all Details of the container created
+****************
+
+Inspect is the command that will describe all the details of the container in json format
+
+$ docker inspect containername/id
+
+Port mapping or port forwarding
+*****************
+By default docker container is ready to be accessed by the user, it is the user internet who cannot reach the container.
+Port mapping/port forwarding is  a concept in docker that allows a user to access the container from browser of his machine
+Port mapping has to be done at the run time of container
+If the container is already running/exited, you cannot do port forwarding
+In port forwarding we have to provide mapping between 2 ports
+Systemport - any free port on the lab machine
+Containerport : port on which container is exposed to. You can get this information from the Image, look for expose keyword on the image in docker hub
+
+
+Method 1: user defined custom port mapping : 
+
+ -p : this option will perform port mapping
+
+$ docker run –name n2 -d -p Systemport:containerport  nginx
+
+$ docker run –name n2 -d -p 8282:80 nginx
+$ docker port n2
+
+
+Method 2:  docker provided random port mapping : -P
+
+$ docker run -d –name web -P httpd
+$ docker port web
+
+In this case user will not provide any port information
+
+Docker will do random free port from host machine and map it to your container port
+
+Access the container OR execute a command on the container from the host machine
+=====================================================================
+Take a container name which is running and which has port mapping done
+
+$ docker exec -it containername command
+
+$ docker exec -it web bash
+
+
+Clean up docker host:
+************************
+Delete  all containers at once
+
+$ docker rm -f $(docker ps -aq)
+$ docker rm -f containername
+
+Delete all images:
+
+$ docker system prune –all
+
+Delete all images
+ Delete exited container
+============================================
+
+Create your custom Image
+********************
+
+Introduction to docker file
+
+Custom image is created from a dockerfile
+Name of the file is going to be dockerfile always
+You can version control these dockerfile in SCM
+
+Create an Image that will deploy index.html file on a container that has nginx webserver 
+
+$ mkdir demodockerfile
+$ cd demodockerfile
+$ vim index.html
+<h1> file from docker </h1>
+Esc :wq!
+$ vim dockerfile
+
+
+FROM ubuntu
+RUN apt-get update
+RUN apt-get install nginx -y
+COPY index.html /var/www/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
+
+
+$ docker build -t mynginx .
+
+$ docker images
+
+ Create your custom Image
+********************
+
+Introduction to docker file
+
+Custom image is created from a dockerfile
+Name of the file is going to be dockerfile always
+You can version control these dockerfile in SCM
+
+Create an Image that will deploy index.html file on a container that has nginx webserver 
+
+$ mkdir demodockerfile
+$ cd demodockerfile
+$ vim index.html
+<h1> file from docker </h1>
+Esc :wq!
+$ vim dockerfile
+
+
+FROM ubuntu
+RUN apt-get update
+RUN apt-get install nginx -y
+COPY index.html /var/www/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
+
+$ docker build -t mynginx .
+
+-t : tag the name to image
+
+$ docker images
+
+
+Your image with the name mynginx will be there.
+
+
+Push the Custom image in to public registry (dockerhub), so that others can also pull your image from dockerhub
+===================================================================================
+Step1: Create a userid and password in docker hub
+
+Sign up on https://hub.docker.com/
+
+Step 2:
+
+In order to push image from host to docker hub —> you need to login from host machine to dockerhub
+
+$ docker login
+
+Username: <dockerhubusername>
+Password: <password>
+
+Step3: lets push the custom image into docker hub
+
+$ docker push <CustomImagename> → push in to docker hub library, which you dont have access to
+
+Change the name of the Image for it to be pushed into our repository on docker hub
+
+$ docker tag oldImagename reposname/mynginx
+
+$ docker tag mynginx sonal04/mynginx
+
+Step 4: push to docker hub
+
+$ docker push sonal04/mynginx
+
+================================
+Docker network
+***************************
+
+$ docker network ls
+
+List of networks that are in your docker host
+The default network that all containers in a docker host use is BRIDGE network
+
+Step1:
+
+Create your 2 custom bridge network
+
+$ docker network create --driver bridge net1
+
+$ docker network create --driver bridge net2
+
+$ docker network ls
+
+Step 2:
+
+Create container 1 and place it in network net1
+
+
+$ docker run -itd --name c1 --network net1 busybox
+
+
+$ docker inspect c1
+
+Copy the ip address : 172.19.0.2
+
+Create container 2 and place it in the same network net1
+
+$ docker run -itd --name c2 --network net1 busybox
+
+$ docker inspect c2
+
+Copy the ip address : 172.19.0.3
+
+====================
+# docker attach c1
+
+# ping c2
+
+You will get the response
+
+Press CTL C to come out of it.
+============================ 
+
+
+
+Create container 3 and place it in the network net2
+
+$ docker run -itd --name c3 --network net2 busybox
+
+$ docker inspect c3
+
+Copy the ip address : 172.20.0.2
+
+$ docker attach c3
+
+$ ping c2  ⇒ no response
+
+$ ping c1 ⇒ no response
+
+=============================
+
+Query all the containers that are part of a network
+*****
+docker network inspect net1 -f "{{json .Containers }}"
+
+================================
+
+Disconnect a container form a network:
+
+# docker network disconnect <networkname> containernam
+
+Connect a container to a network
+
+# docker network connect <networkname> containername
+
+=====================================
+
+Remove the network:
+***********
+
+# delete containers
+
+# docker rm -f $(docker ps -aq)
+
+# docker network rm net1 net2
+
+========================================================
+
+
+
+Docker-compose
+
+If you want to create multiple containers from different images at one go, you will make use of docker tool → docker COMPOSE
+
+
+Write a file with information of what container we want, what should be image, port, volume, env variable
+
+This file is written in YAML
+It is not a programming language
+Its not a scriptitng language
+Its a file format
+It store the data in key and value format
+
+Name of the file is : docker-compose.yml
+
+Docker compose is a tool to be installed on Docker host
+
+Install Docker-compose on Lab
+
+ curl -SL https://github.com/docker/compose/releases/download/v2.5.0/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
+ sudo chmod +x /usr/local/bin/docker-compose
+  docker-compose --version
+
+====================
+
+Docker compose DEMO:
+=======================
+
+Create a compose file
+
+mkdir composedemo
+cd composedemo
+vim docker-compose.yml
+
+version: '3'
+services:
+ compose-test:
+  image: centos:7
+  networks:
+   - compnet
+  command: sleep infinity
+  depends_on:
+   - compose-db
+ compose-db:
+  image: redis
+  ports:
+   - '6379:6379'
+  networks:
+   - compnet
+networks:
+ compnet:
+
+
+
+
+
+Press esc :wq!
+
+$ docker-compose up -d
+
+$ docker-compose ps
+
+$ docker-compose exec compose-test /bin/bash 
+
+OR
+
+$ docker-compose exec compose-test sh
+
+On the test container we need to ping DB container (6379)
+
+To do this we need to install ncat package
+
+$ yum install nc -y
+
+Use ncat command to connect to container with name compose-db
+
+$ nc compose-db 6379
+
+
+
+
+ping
++PONG
+
+set name sonal
++OK
+
+set day sunday
++OK
+
+get name
+$5
+sonal
+
+get day
+$6
+sunday
+
+Ctl C
+
+Exit ⇒ out of container
+
+Stop & Delete all containers created using docker-compose file
+
+$ docker-compose down
