@@ -1,0 +1,20 @@
+# this is my first dockerfile
+
+FROM ubuntu
+LABEL maintainer="Sonal"
+RUN apt-get update
+RUN apt-get install nginx -y
+RUN apt-get install git -y
+COPY index.html /var/www/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
+
+Create the index.html file
+
+<h1> this file is from docker </h1>
+
+Save (:wq!)
+
+Build the dockerfile
+
+docker build -t myimage01 .
