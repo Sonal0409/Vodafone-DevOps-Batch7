@@ -18,3 +18,8 @@ Save (:wq!)
 Build the dockerfile
 
 docker build -t myimage01 .
+
+
+RUN THE IMAGE
+
+ docker run -d --name web -P  myimage01
