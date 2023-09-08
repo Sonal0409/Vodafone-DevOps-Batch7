@@ -23,3 +23,18 @@ docker build -t myimage01 .
 RUN THE IMAGE
 
  docker run -d --name web -P  myimage01
+
+
+Demo2:
+====================
+
+git clone https://github.com/Sonal0409/nodejsappDockerfile.git
+
+cd nodejsappDockerfile
+
+docker build -t myimage02 .
+
+docker images
+
+docker run -d --name web2 -P myimage02
+
