@@ -38,3 +38,16 @@ docker images
 
 docker run -d --name web2 -P myimage02
 
+
+Push images:
+
+push the file to docker hub , our repo
+
+# docker login
+ username 
+ password
+
+# docker tag myimage01 hubacountname/myimage01
+
+# docker push hubacountname/myimage01
+
