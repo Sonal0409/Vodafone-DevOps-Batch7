@@ -1,0 +1,113 @@
+Step 1:
+
+### INSTALL/Upgrade DOCKER 
+
+sudo apt-get update
+sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
+
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+sudo apt-get update ; clear
+sudo apt-get install -y docker-ce
+
+sudo vi /etc/docker/daemon.json
+
+
+
+{
+	"exec-opts": ["native.cgroupdriver=systemd"]
+}
+
+sudo service docker restart
+
+
+Step 2: 
+
+### INSTALL KUBEADM,KUBELET,KUBECTL
+
+
+echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+sudo apt-get update ; clear
+sudo apt-get install -y kubelet kubeadm kubectl	
+
+Step3: 
+
+##### Initiate Kube cluster
+
+sudo kubeadm init --ignore-preflight-errors=all
+
+Step 4:
+
+#### Setup the environment Variables
+
+sudo mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+Step 5:
+## set up the  Weave network
+
+kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')" 
+
+
+Step 6:
+
+#### check if Kube Master is ready or not
+
+$ kubectl get nodes
+$ kubectl describe nodes <node_name>
+
+Create a POD
+
+$ kubectl run pod1 –image nginx
+
+$ kubectl describe pod pod1 | less
+
+Press q to come out
+You will observe that your pos is not scheduled and has failed
+
+To schedule the pods on the Master machine 
+
+$ kubectl get nodes
+
+Copy the Nodename : ip-172-31-28-125
+
+$ kubectl describe nodes <nodeName>
+
+$ kubectl describe nodes ip-172-31-28-125
+
+Copy the taints
+
+node-role.kubernetes.io/master:NoSchedule
+
+
+We need to remove the taints, so that pods can be scheduled on the master
+
+To remove the taint
+
+$ kubectl taint node <node_name> <taintname>-
+
+$ kubectl taint node ip-172-31-28-125 node-role.kubernetes.io/master:NoSchedule-
+
+Taint will be removed.
+
+
+
+Lets create a new pod and check if it is scheduled on the master or not
+
+$ kubectl run pod2 –image nginx
+
+$ kubectl get pods
+
+Will give number of pods available in the cluster
+
+$ kubectl get pods -o wide
+
+To know on which node your pods are scheduled
+
+$ kubectl delete pod pod1
+
+To delete one pod 
+$ kubectl delete pods –all
+All pods will be deleted
