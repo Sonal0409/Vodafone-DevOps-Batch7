@@ -110,3 +110,20 @@ $ kubectl delete pod pod1
 To delete one pod 
 $ kubectl delete pods –all
 All pods will be deleted
+
+
+=========================================
+
+YAML files
+
+apiVersion: v1 # here apiVersion is a schema/library that k8s will use to create the object
+kind: Pod  # here we give the name of the object to be created by K8s
+metadata:
+ name: pod1  # this information is give by user
+ labels:  # user defined bot key and value
+  author: sonal
+  app: nginx
+spec: # specify what you want on the POD
+ containers:
+  - name: c1
+    image: nginx
