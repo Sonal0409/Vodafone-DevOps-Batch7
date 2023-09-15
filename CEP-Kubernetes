@@ -1,0 +1,203 @@
+Installation of Kubernetes on the Lab:
+===================================================
+Step 1:
+
+### INSTALL/Upgrade DOCKER 
+# sudo su -
+# sudo apt-get update
+# sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
+
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+sudo apt-get update ; clear
+sudo apt-get install -y docker-ce
+
+sudo vi /etc/docker/daemon.json
+
+Press i and insert below content
+
+{
+	"exec-opts": ["native.cgroupdriver=systemd"]
+}
+
+Save the file.
+
+sudo service docker restart
+
+
+
+
+
+
+Step 2: 
+
+### INSTALL KUBEADM,KUBELET,KUBECTL
+
+
+echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+sudo apt-get update ; clear
+sudo apt-get install -y kubelet kubeadm kubectl	
+
+Step3: 
+
+##### Initiate Kube cluster
+
+sudo kubeadm init --ignore-preflight-errors=all
+
+Step 4:
+
+#### Setup the environment Variables
+
+  mkdir -p $HOME/.kube
+  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+  sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+
+Step 5:
+## set up the  Calico network
+
+sudo kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.24.1/manifests/calico.yaml
+
+
+Step 6:
+
+#### check if Kube Master is ready or not
+
+# kubectl get nodes
+
+
+Create a POD
+===============================
+
+$ kubectl run pod1 --image nginx
+
+$ kubectl describe pod pod1 | less
+
+Press q to come out
+You will observe that your pos is not scheduled and has failed
+
+To schedule the pods on the Master machine 
+
+$ kubectl get nodes
+
+=============================
+
+To schedule the pods on the Master machine 
+
+$ kubectl get nodes
+
+Copy the Nodename : ip-172-31-28-125
+
+$ kubectl describe nodes <nodeName>
+
+$ kubectl describe nodes ip-172-31-28-125
+
+Copy the taints value
+
+node-role.kubernetes.io/master:NoSchedule
+
+
+We need to remove the taints, so that pods can be scheduled on the master
+
+To remove the taint
+
+$ kubectl taint node <node_name> <taintname>-
+
+$ kubectl taint node ip-172-31-28-125 node-role.kubernetes.io/master:NoSchedule-
+
+Taint will be removed.
+
+
+
+
+
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql
+  labels:
+    app: mysql-wordpress
+spec:
+  ports:
+    - port: 3306
+      targetPort: 3306
+  selector:
+    app: mysql-wordpress
+    product: mysql
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql
+  labels:
+    app: mysql-wordpress
+spec:
+  selector:
+    matchLabels:
+      app: mysql-wordpress
+      product: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql-wordpress
+        product: mysql
+    spec:
+      containers:
+      - image: mysql
+        name: mysql-container
+        env:
+        - name: MYSQL_DATABASE
+          value: wordpress
+        - name: MYSQL_ROOT_PASSWORD
+          value: password
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wordpress
+  labels:
+    app: mysql-wordpress
+spec:
+  ports:
+    - port: 80
+      targetPort: 80
+  selector:
+    app: mysql-wordpress
+    tier: frontend
+  type: NodePort
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wordpress
+  labels:
+    app: mysql-wordpress
+spec:
+  selector:
+    matchLabels:
+      app: mysql-wordpress
+      tier: frontend
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: mysql-wordpress
+        tier: frontend
+    spec:
+      containers:
+      - image: wordpress
+        name: wordpress
+        env:
+        - name: WORDPRESS_DB_HOST
+          value: mysql
+        - name: WORDPRESS_DB_USER
+          value: root
+        - name: WORDPRESS_DB_PASSWORD
+          value: password
